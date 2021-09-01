@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карточки профиля</title>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</head>
+
+<body>
+    <div class="logo">
+        <img src="http://127.0.0.1:8000/get_logo">
+    </div>
+
+    <div class="search">
+        <input type="text">
+        <button id="searchBtn"> Найти</button>
+    </div>
+    <div class="profils" , id="profils">
+</body>
+<script>
+    const url = "https://mycandidate.onti.actcognitive.org/front_response/get_top"
+    fetch(url)
+        .then(res => res.json())
+        .then(out => creatProfils(out))
+
+
+    function creatProfils(data) {
+        // creatCart(data['1'])
+        for (person in data) {
+            creatCart(data[person])
+        }
+    }
+
+    let count = 0
+    function creatCart(person_data) {
+        const person_keys = Object.keys(person_data)
+        const contacs_keys = Object.keys(person_data["contacts"])
+        const scien_keys = Object.keys(person_data["science_info"])
+        const media_keys = Object.keys(person_data["media"])
+
+        let profils = document.getElementById("profils")
+        let profil = document.createElement("div")
+        profil.className = "profil"
+
+        let foto = document.createElement("img")
+        foto.id = "foto"
+        foto.src = person_data[person_keys[0]]
+
+        let table = document.createElement("table")
+
+        let trf = document.createElement("tr")
+        let tdf = document.createElement("td")
+        tdf.rowSpan = "4"
+        tdf.appendChild(foto)
+        trf.appendChild(tdf)
+        table.appendChild(trf)
+
+        for (let i = 1; i < 4; i++) {
+            let tr = document.createElement('tr')
+            let td1 = document.createElement('td')
+            let td2 = document.createElement('td')
+
+            td1.innerHTML = person_data[person_keys[i]]
+            td2.innerHTML = person_data["contacts"][contacs_keys[i - 1]]
+
+            tr.appendChild(td1)
+            tr.appendChild(td2)
+            table.appendChild(tr)
+            if (i == 3) {
+                let b = document.createElement("button")
+                b.id = count
+                b.innerHTML = "Подробнее"
+                b.addEventListener("click", function (aid) {
+                    let id = aid.target.id
+                    console.log(id)
+                    let e = document.getElementById("h" + id);
+                    if (e.style.display == 'none') {
+                        document.getElementById(id).innerHTML = "Свернуть";
+                        e.style.display = 'block';
+                    }
+                    else
+                        e.style.display = 'none';
+                    document.getElementById(id).innerHTML = "Подробнее"
+
+                })
+
+
+                let tdl = document.createElement("td")
+                tdl.appendChild(b)
+                tr.appendChild(tdl)
+                table.appendChild(tr)
+            }
+        }
+
+        let htable = document.createElement("table")
+        htable.id = "h" + count
+        htable.style = "display:none"
+
+        let htr1 = document.createElement("tr")
+        let htb1 = document.createElement("tb")
+        let htb2 = document.createElement("tb")
+
+        htb1.innerHTML = person_data["science_ids"]["scopus"]
+        htb2.innerHTML = person_data["science_info"]["h_idx"]
+
+        htr1.appendChild(htb1)
+        htr1.appendChild(htb2)
+        htable.appendChild(htr1)
+
+        let htr2 = document.createElement("tr")
+        let htb3 = document.createElement("tb")
+        let htb4 = document.createElement("tb")
+
+        htb3.innerHTML = person_data["science_ids"]["elib"]
+        htb4.innerHTML = person_data["science_info"]["papers_count"]
+
+        htr2.appendChild(htb3)
+        htr2.appendChild(htb4)
+        htable.appendChild(htr2)
+
+        let tre = document.createElement("tr")
+        let tde = document.createElement("td")
+        tde.rowSpan = "4"
+
+        tre.appendChild(tde)
+        htable.appendChild(tre)
+
+        for (i = 3; i < 6; i++) {
+            let htr = document.createElement("tr")
+            let htd = document.createElement("td")
+            htd.innerHTML = person_data["science_info"][scien_keys[i]]
+
+            htr.appendChild(htd)
+            htable.appendChild(htr)
+        }
+
+        for (i = 0; i < media_keys.length; i++) {
+            let htr = document.createElement("tr")
+            let htd = document.createElement("td")
+            htd.innerHTML = person_data["media"][media_keys[i]]
+            htd.colSpan = "2"
+
+            htr.appendChild(htd)
+            htable.appendChild(htr)
+        }
+
+        table.appendChild(htable)
+        profil.appendChild(table)
+        profils.appendChild(profil)
+        count++
+    }
+
+</script>
+
+<style>
+    td {
+        padding: 5px;
+    }
+
+    #foto {
+        width: 50px;
+        height: 50px;
+    }
+
+    table {
+        display: inline-block;
+    }
+
+    img {
+        display: inline-block;
+    }
+</style>
+
+</html>
