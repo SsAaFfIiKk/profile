@@ -11,24 +11,27 @@
 
 <body>
     <div class="logo">
-        <img src="http://127.0.0.1:8000/get_logo">
+        <div class="foto">
+            <img src="http://127.0.0.1:8000/get_logo">
+        </div>
     </div>
 
     <div class="search">
         <input type="text">
-        <button id="searchBtn"> Найти</button>
+        <button id="searchBtn" onclick="creatProfils()">Найти</button>
     </div>
-    <div class="profils" , id="profils">
+    <br>
+    <div class="profils" id="profils"> </div>
 </body>
 <script>
     const url = "https://mycandidate.onti.actcognitive.org/front_response/get_top"
     fetch(url)
         .then(res => res.json())
-        .then(out => creatProfils(out))
+        .then(out => data = out)
 
 
-    function creatProfils(data) {
-        // creatCart(data['1'])
+    function creatProfils() {
+        console.log(data)
         for (person in data) {
             creatCart(data[person])
         }
@@ -50,6 +53,7 @@
         foto.src = person_data[person_keys[0]]
 
         let table = document.createElement("table")
+        table.className = "mtable"
 
         let trf = document.createElement("tr")
         let tdf = document.createElement("td")
@@ -73,18 +77,19 @@
                 let b = document.createElement("button")
                 b.id = count
                 b.innerHTML = "Подробнее"
+                b.className = "moreinfo"
                 b.addEventListener("click", function (aid) {
                     let id = aid.target.id
                     console.log(id)
-                    let e = document.getElementById("h" + id);
-                    if (e.style.display == 'none') {
+                    let tab = document.getElementById("h" + id);
+                    if (tab.style.display == 'none') {
                         document.getElementById(id).innerHTML = "Свернуть";
-                        e.style.display = 'block';
+                        tab.style.display = 'block';
                     }
-                    else
-                        e.style.display = 'none';
-                    document.getElementById(id).innerHTML = "Подробнее"
-
+                    else {
+                        tab.style.display = 'none';
+                        document.getElementById(id).innerHTML = "Подробнее"
+                    }
                 })
 
 
@@ -97,28 +102,30 @@
 
         let htable = document.createElement("table")
         htable.id = "h" + count
+        htable.className = "htable"
         htable.style = "display:none"
 
         let htr1 = document.createElement("tr")
-        let htb1 = document.createElement("tb")
-        let htb2 = document.createElement("tb")
+        let htb1 = document.createElement("td")
+        let htb2 = document.createElement("td")
 
-        htb1.innerHTML = person_data["science_ids"]["scopus"]
-        htb2.innerHTML = person_data["science_info"]["h_idx"]
+        htb1.innerHTML = "scopus id: " + person_data["science_ids"]["scopus"]
+        htb2.innerHTML = "Индекс хирша: " + person_data["science_info"]["h_idx"]
 
         htr1.appendChild(htb1)
         htr1.appendChild(htb2)
         htable.appendChild(htr1)
+        // htable.border="1"
 
         let htr2 = document.createElement("tr")
-        let htb3 = document.createElement("tb")
-        let htb4 = document.createElement("tb")
+        let htd3 = document.createElement("td")
+        let htd4 = document.createElement("td")
 
-        htb3.innerHTML = person_data["science_ids"]["elib"]
-        htb4.innerHTML = person_data["science_info"]["papers_count"]
+        htd3.innerHTML = "elibrary id: " + person_data["science_ids"]["elib"]
+        htd4.innerHTML = "Колличество статей: " + person_data["science_info"]["papers_count"]
 
-        htr2.appendChild(htb3)
-        htr2.appendChild(htb4)
+        htr2.appendChild(htd3)
+        htr2.appendChild(htd4)
         htable.appendChild(htr2)
 
         let tre = document.createElement("tr")
@@ -128,21 +135,32 @@
         tre.appendChild(tde)
         htable.appendChild(tre)
 
+        let labels = ["Количество соавторов: ", "Количество патентов: ", "Количество грантов: "]
         for (i = 3; i < 6; i++) {
             let htr = document.createElement("tr")
             let htd = document.createElement("td")
-            htd.innerHTML = person_data["science_info"][scien_keys[i]]
+            htd.innerHTML = labels[i - 3] + person_data["science_info"][scien_keys[i]]
 
             htr.appendChild(htd)
             htable.appendChild(htr)
         }
 
+        let media_labels = ["Профиль VK: ", "Профиль Habr: "]
         for (i = 0; i < media_keys.length; i++) {
             let htr = document.createElement("tr")
             let htd = document.createElement("td")
-            htd.innerHTML = person_data["media"][media_keys[i]]
-            htd.colSpan = "2"
-
+            if (person_data["media"][media_keys[i]] != null) {
+                let a = document.createElement("a")
+                a.href = person_data["media"][media_keys[i]]
+                a.target = "_blank"
+                a.text = person_data[person_keys[1]] + " " + person_data[person_keys[2]]
+                htd.innerHTML = media_labels[i]
+                htd.colSpan = "2"
+                htd.appendChild(a)
+            }
+            else {
+                htd.innerHTML = media_labels[i] + "не найден"
+            }
             htr.appendChild(htd)
             htable.appendChild(htr)
         }
@@ -156,14 +174,51 @@
 </script>
 
 <style>
+    body {
+        font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
+        height: 100%;
+        margin: 0;
+        padding: 0px 20px;
+    }
+
+    .foto {
+        width: 300px;
+        margin: auto;
+    }
+
+    input {
+        margin-left: 50px;
+        width: 90%;
+    }
+
+    .profil {
+        width: 900px;
+        margin: auto;
+    }
+
+    .moreinfo {
+        width: 100px;
+        /* height: ; */
+    }
+
+    .mtable {
+        border: 1px solid black;
+        /* border-radius: 18%; */
+    }
+
     td {
-        padding: 5px;
+        padding: 15px;
     }
 
     #foto {
         width: 50px;
         height: 50px;
+        border-radius: 30%;
     }
+
+    /* td.htable {
+        aligin:
+    }  */
 
     table {
         display: inline-block;
