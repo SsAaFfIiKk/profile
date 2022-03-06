@@ -22,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/cards", response_class=HTMLResponse)
 def homepage(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
@@ -32,4 +32,4 @@ def logo():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app)
+    uvicorn.run(app, host="0.0.0.0", port=1990, ssl_keyfile="./certs/privkey.pem", ssl_certfile="./certs/cert.pem")
